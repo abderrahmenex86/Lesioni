@@ -38,7 +38,7 @@ misleading.
 ## Run it
 
 ```bash
-git clone https://github.com/abderrahmenex86/Plant-Disease-Segmentation
+git clone https://github.com/abderrahmenex86/segmenti
 cd Plant-Disease-Segmentation
 pip install -r requirements.txt
 
@@ -70,7 +70,7 @@ Python · PyTorch · TorchMetrics · Optuna · Matplotlib
 
 ## Related
 
-- [Plant-Species-Classifier](https://github.com/abderrahmeneex86/Plant-Species-Classifier)
+- [Plant-Species-Classifier](https://github.com/abderrahmenex86/Plant-Species-Classifier)
   for species identification
-- [FloraLens](https://github.com/abderrahmeneex86/FloraLens) runs a segmentation
+- [FloraLens](https://github.com/abderrahmenex86/FloraLens) runs a segmentation
   model on Android
