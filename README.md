@@ -38,7 +38,7 @@ misleading.
 ## Run it
 
 ```bash
-git clone https://github.com/abderrahmenex86/segmenti
+git clone https://github.com/abderrahmenex86/Plant-Disease-Segmentation
 cd Plant-Disease-Segmentation
 pip install -r requirements.txt
 
