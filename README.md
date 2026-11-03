@@ -1,179 +1,76 @@
 # Plant Disease Segmentation
 
-<div align="center">
-<p>
-<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch" />
-<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-<img src="https://img.shields.io/badge/Optuna-20232A?style=for-the-badge&logo=optuna&logoColor=white" alt="Optuna" />
-<img src="https://img.shields.io/badge/TorchMetrics-000000?style=for-the-badge&logo=pytorch&logoColor=white" alt="TorchMetrics" />
-</p>
-</div>
+Semantic segmentation of diseased regions on plant leaves, trained on PlantSeg.
+It compares four architectures and keeps the training diagnostics that explain
+which one generalises.
 
-This project is a modular, production-ready semantic crop disease leaf segmentation engine designed to identify and isolate infected sections of plant foliage. Designed specifically to handle extreme class imbalances, it facilitates robust diagnostic classification and spatial overlap modeling.
+![Validation Dice comparison](docs/figs/01_model_comparison.png)
 
-______________________________________________________________________
+## What it does
 
-## Performance Diagnostics
+- Trains four segmentation architectures behind one `--model_type` flag.
+- Uses focal loss with per-class weighting, since healthy leaf background is
+  about 80% of the pixels and dominates a plain cross-entropy objective.
+- Optimises architecture and optimiser settings with Optuna, recording the
+  search space so a run can be inspected afterwards.
+- Writes checkpoints, metric history, and the hyperparameters of every run into
+  `artifacts/<timestamp>_<model>_<classes>/`, and can resume from any of them.
+- Plots Dice, IoU, and the generalisation gap across models from the stored
+  histories.
 
-### Model Convergence & Comparative Benchmarks
+## Results
 
-The comparison below demonstrates the training dynamics, generalization capabilities, and validation metrics across all four architectures:
+The comparison plots are the record: validation Dice, validation IoU, and
+generalisation gap per architecture are in `docs/figs/01_model_comparison.png`,
+`06_multi_model_iou_comparison.png`, and `04_generalization_gap_comparison.png`.
 
-<div align="center">
-<table>
-<tr>
-<td width="33%" align="center"><b>Validation Dice Comparison</b></td>
-<td width="33%" align="center"><b>Validation IoU Comparison</b></td>
-<td width="33%" align="center"><b>Generalization Gap Curves</b></td>
-</tr>
-<tr>
-<td><img src="docs/figs/01_model_comparison.png" width="100%" alt="Validation Dice Comparison"/></td>
-<td><img src="docs/figs/06_multi_model_iou_comparison.png" width="100%" alt="Validation IoU Comparison"/></td>
-<td><img src="docs/figs/04_generalization_gap_comparison.png" width="100%" alt="Generalization Gap Curves"/></td>
-</tr>
-</table>
-</div>
+No numeric table is published in this repository, so the figures are the source
+of truth rather than a summary table.
 
-### Optimization Landscapes & Deep Diagnostics
+![IoU comparison](docs/figs/06_multi_model_iou_comparison.png)
 
-The diagnostics below illustrate the focal loss convergence of the top-performing model alongside the meta-heuristic parameter-search space parsed by the Optuna engine:
+## Dataset
 
-<div align="center">
-<table>
-<tr>
-<td width="50%" align="center"><b>Top Model Focal-Dice Diagnostics</b></td>
-<td width="50%" align="center"><b>Optuna Parameter Search Space (3D Map)</b></td>
-</tr>
-<tr>
-<td><img src="docs/figs/02_best_run_diagnostics.png" width="100%" alt="Best Model Focal-Dice Curves"/></td>
-<td><img src="docs/figs/05_optuna_search_landscape.png" width="100%" alt="Optuna 2D Param Search Landscape"/></td>
-</tr>
-<tr>
-<td colspan="2" align="center"><b>Optuna Trajectory Convergence Curve</b></td>
-</tr>
-<tr>
-<td colspan="2" align="center"><img src="docs/figs/03_optuna_convergence.png" width="80%" alt="Optuna Trajectory Convergence"/></td>
-</tr>
-</table>
-</div>
+PlantSeg, with 116 disease classes. Pixel balance is roughly 80% background to
+20% lesion, which is why the loss is weighted and why accuracy alone would be
+misleading.
 
-______________________________________________________________________
-
-## Core Features
-
-- **Pure PyTorch Architecture**: Decoupled from heavy, high-level trainer abstractions (such as PyTorch Lightning or FastAI) to ensure low-level control over gradients, state loading, and memory buffers.
-- **Built-from-Scratch Baseline**: Includes a custom U-Net segmentation model and a custom multi-class Focal-Dice Loss function implemented natively in PyTorch to counteract severe dataset imbalances.
-- **Pretrained Transfer Suite**: Supports fine-tuning comparisons across modular networks, utilizing standard backbones like **DeepLabV3** (via Torchvision), **LinkNet** (via SMP), and **SegFormer** using Mix Vision Transformer (`mit_b0`) encoders.
-- **Hardware Optimized Pipelines**: DataLoaders are calibrated to saturate high-compute environments (16-core CPUs, 32GB RAM, NVIDIA GPUs) utilizing asynchronous prefetching (factor of 4), pinned memory, and persistent worker configurations.
-- **Unified Dynamic CLI**: Flexible argument parsing dynamically injects custom parameters from the command line into training states, serializing configurations instantly to `hyperparameters.json`.
-- **Smart State Inference**: An automated inference engine reads historical run configurations directly from serialized state files, dynamically rebuilding model architectures on demand.
-
-______________________________________________________________________
-
-## Dataset Imbalance Context
-
-A systematic pixel-distribution sweep of the primary **PlantSeg** dataset reveals extreme class imbalances, validating the usage of specialized loss structures over naive cross-entropy:
-
-- **Background (Healthy Leaf/Environment):** 80.21% of total pixels
-- **Foreground (Active Disease Lesions):** 19.79% of total pixels
-- **Micro-Class Variance:** Active class distributions range from as low as **0.0011%** (Class 42) to **1.1597%** (Class 90).
-
-To counter this, our custom `FocalDiceLoss` scales pixel losses based on prediction difficulty, forcing the model to heavily penalize errors on rare disease spots without neglecting background geometry.
-
-______________________________________________________________________
-
-## Getting Started
-
-### Prerequisites
-
-- Python (v3.10+)
-- NVIDIA GPU with newer CUDA versions
-
-### Installation
-
-1. Clone the workspace:
+## Run it
 
 ```bash
-git clone https://github.com/abderrahmenex86/segmenti.git
-cd segmenti
-```
-
-2. Install the required libraries:
-
-```bash
+git clone https://github.com/abderrahmenex86/Plant-Disease-Segmentation
+cd Plant-Disease-Segmentation
 pip install -r requirements.txt
-```
 
-______________________________________________________________________
-
-## CLI Execution Workflows
-
-The engine is split into two clear entry points: `main.py` manages the core ML lifecycle, while `tools.py` handles utility and preprocessing operations.
-
-### 1. Data Setup & Verification
-
-Initialize directory structures and inspect dataset naming alignments dynamically:
-
-```bash
-# Setup directories and download the PlantSeg dataset archive
 python tools.py --mode download --root_dir dataset
-
-# Verify image-to-mask annotations coordinate matching
 python tools.py --mode verify --root_dir dataset
-```
 
-### ### 2. Sanity Validation
-
-Execute gradient flow checks, output dimension verifications, and optimization step tests on sliced loaders to ensure integration before scaling:
-
-```bash
 python main.py --mode test --model_type unet --num_classes 116 --img_size 256
-```
-
-### 3. Hyperparameter Sweep (Optuna)
-
-Optimize learning rates, optimizer groups, and widths using dataset slicing for speed:
-
-```bash
 python main.py --mode optimize --model_type unet --num_classes 116 --img_size 256
+python main.py --mode train --model_type unet --num_classes 116 --img_size 256 \
+  --optimizer_type AdamW --learning_rate 0.0003 --weight_decay 0.0001
+python main.py --mode infer --image_path dataset/plantseg/images/val/sample_leaf.jpg \
+  --run_dir artifacts/20260628_190322_unet_116class
 ```
 
-### 4. Training (Dynamic Hyperparameters)
+Interrupted runs resume with `python main.py --mode train --resume --num_classes
+116`.
 
-Train the network, utilizing direct keyword arguments to configure optimizers or hardware states:
+## Limits
 
-```bash
-python main.py --mode train --model_type unet --num_classes 116 --img_size 256 --optimizer_type AdamW --learning_rate 0.0003 --weight_decay 0.0001
-```
+- PlantSeg only. Other crops, lighting, and camera hardware are untested.
+- 116 classes with a heavily imbalanced pixel distribution; rare diseases have
+  little training signal.
+- Results are plotted rather than tabulated, so comparing two runs means reading
+  the figures.
 
-### 5. Resuming Training
+## Stack
 
-Recover and resume training from the latest save directory seamlessly:
+Python · PyTorch · TorchMetrics · Optuna · Matplotlib
 
-```bash
-python main.py --mode train --resume --num_classes 116
-```
+## Related
 
-### 6. Smart Inference
-
-Execute inference on arbitrary images using the historical parameters and weights of a past training run directory:
-
-```bash
-python main.py --mode infer --image_path dataset/plantseg/images/val/sample_leaf.jpg --run_dir artifacts/20260628_190322_unet_116class
-```
-
-### 7. Performance Visualization
-
-Render standard training loss convergence and Jaccard diagnostic curves:
-
-```bash
-python tools.py --mode plot
-```
-
-______________________________________________________________________
-
-## Related Projects
-
-- [FloraLens](https://github.com/abderrahmenex86/FloraLens) — Offline plant, pest, and disease diagnosis app
-- [Flora](https://github.com/abderrahmenex86/flora) — Plant classification model
-- [Pesti](https://github.com/abderrahmenex86/pesti) — Pest classification model
+- [Plant-Species-Classifier](https://github.com/abderrahmeneex86/Plant-Species-Classifier)
+  for species identification
+- [FloraLens](https://github.com/abderrahmeneex86/FloraLens) runs a segmentation
+  model on Android
