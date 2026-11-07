@@ -1,4 +1,4 @@
-# Plant Disease Segmentation
+# Lesioni
 
 Semantic segmentation of diseased regions on plant leaves, trained on PlantSeg.
 It compares four architectures and keeps the training diagnostics that explain
@@ -38,8 +38,8 @@ misleading.
 ## Run it
 
 ```bash
-git clone https://github.com/abderrahmenex86/Plant-Disease-Segmentation
-cd Plant-Disease-Segmentation
+git clone https://github.com/abderrahmenex86/Lesioni
+cd Lesioni
 pip install -r requirements.txt
 
 python tools.py --mode download --root_dir dataset
@@ -70,7 +70,7 @@ Python · PyTorch · TorchMetrics · Optuna · Matplotlib
 
 ## Related
 
-- [Plant-Species-Classifier](https://github.com/abderrahmenex86/Plant-Species-Classifier)
-  for species identification
-- [FloraLens](https://github.com/abderrahmenex86/FloraLens) runs a segmentation
-  model on Android
+- [Flora](https://github.com/abderrahmenex86/Flora) for plant species
+  identification
+- [Entomi](https://github.com/abderrahmenex86/Entomi) for insect and pest
+  classification
