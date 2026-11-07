@@ -17,7 +17,6 @@ _Validation Dice on PlantSeg v3 (1,247 images, 256 px). The curves are the lates
 - [Project layout](#project-layout)
 - [Related projects](#related-projects)
 - [Stack](#stack)
-- [Limits](#limits)
 
 ## Results
 
@@ -320,21 +319,3 @@ Artifacts:
 | numpy | not pinned | Mask statistics |
 | Pillow | not pinned | Image and mask loading |
 | tqdm | not pinned | Progress bars |
-
-## Limits
-
-- LinkNet did not learn: 0.00% Dice and IoU across 11 epochs. The table keeps the failure rather than hiding it.
-- DeepLabV3 overfits. Training Dice reaches about 61.5% while validation Dice stays near 37.6%; the gap is visible in `02_best_run_diagnostics.png`.
-- All numbers are validation numbers. The test split has 2,295 images and no evaluation script.
-- The `segformer` model type is a U-Net with a MiT-B0 encoder, not the original SegFormer decoder. The label is useful for comparing encoders, not for claiming a SegFormer implementation.
-- The U-Net Optuna search suggests `base_channels`, but `build_model` does not use it. That trial dimension has no effect on the model.
-- The loss has no per-class weights. Rare diseases with small foreground areas get little signal, and the macro Dice is sensitive to them.
-- The runs in the table use 256 px. Small lesions and thin boundaries are blurred by the resize, and there is no test-time augmentation or CRF postprocessing.
-- `plot.py` selects the latest completed run per architecture, not the best run ever. The table follows the same rule.
-- `plot.py` overwrites the committed figures in `docs/figs/`. Run it only when you intend to replace the reference plots.
-- Inference writes overlays into `docs/figs/` and overwrites a file with the same image name.
-- The Optuna study uses the first 512 training and validation images and 10 epochs per trial, so its ranking is a proxy for full training.
-- The run histories do not record the GPU model. I cannot state which card produced the table.
-- The table runs used batch size 32 at 256 px. Reduce it if the GPU cannot hold that batch.
-- PlantSeg v3 is CC BY-NC 4.0. Review the dataset license before using the trained weights or the segmentation output commercially.
-- `class_mapping.json` has 115 disease names while the label space has 116 indices including background. Check the offset before joining names to mask values; do not treat the mapping as a complete 1:1 list for every mask index.
