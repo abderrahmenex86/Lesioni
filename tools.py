@@ -8,7 +8,7 @@ from src.helpers import (
 
 
 def main():
-    argument_parser = argparse.ArgumentParser(description="Segmenti Utility Processing CLI")
+    argument_parser = argparse.ArgumentParser(description="Lesioni Utility Processing CLI")
     argument_parser.add_argument(
         "--mode", type=str, required=True, choices=["download", "verify", "plot"], help="Utility processing option"
     )

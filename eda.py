@@ -4,7 +4,7 @@ from PIL import Image
 from tqdm import tqdm
 
 
-def run_eda(dataset_path="dataset/plantsegv3/annotations/train", num_classes=116):
+def run_eda(dataset_path="dataset/plantseg/annotations/train", num_classes=116):
     paths = list(Path(dataset_path).glob("*.png"))
     counts = np.zeros(num_classes, dtype=np.int64)
     fg_pixels, bg_pixels = 0, 0

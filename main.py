@@ -14,7 +14,7 @@ from src.trainer import Trainer
 
 
 def main():
-    argument_parser = argparse.ArgumentParser(description="Segmenti Pure-PyTorch ML Lifecycle Engine")
+    argument_parser = argparse.ArgumentParser(description="Lesioni Pure-PyTorch ML Lifecycle Engine")
     argument_parser.add_argument("--mode", required=True, choices=["test", "train", "optimize", "infer"])
     argument_parser.add_argument("--model_type", default="unet", choices=["unet", "deeplabv3", "linknet", "segformer"])
     argument_parser.add_argument("--root_dir", default="dataset/plantseg")
